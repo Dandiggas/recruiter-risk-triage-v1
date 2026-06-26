@@ -6,6 +6,7 @@ from app.config import load_settings
 from app.tools.companies_house import companies_house_lookup
 from app.tools.search import search_web
 from app.tools.url_expand import expand_url
+from app.tools.web_metadata import fetch_web_metadata
 
 
 class FakeResponse:
@@ -80,12 +81,41 @@ def test_companies_house_lookup_gracefully_reports_missing_key():
 def test_expand_url_returns_final_url_and_shortener_signal():
     opener = Mock(return_value=FakeResponse(final_url="https://real-company.example/jobs/1"))
 
-    result = expand_url("https://bit.ly/example", opener=opener)
+    result = expand_url("https://bit.ly/example", opener=opener, resolver=lambda host: ["93.184.216.34"])
 
     assert result["status"] == "ok"
     assert result["input_url"] == "https://bit.ly/example"
     assert result["final_url"] == "https://real-company.example/jobs/1"
     assert result["is_shortener"] is True
+
+
+def test_expand_url_blocks_private_network_hosts_before_fetching():
+    opener = Mock(return_value=FakeResponse())
+
+    result = expand_url("http://127.0.0.1:8765/admin", opener=opener)
+
+    assert result["status"] == "blocked_unsafe_url"
+    opener.assert_not_called()
+
+
+def test_expand_url_blocks_redirects_to_private_network_hosts():
+    opener = Mock(return_value=FakeResponse(final_url="http://169.254.169.254/latest/meta-data"))
+
+    result = expand_url("https://bit.ly/example", opener=opener, resolver=lambda host: ["93.184.216.34"])
+
+    assert result["status"] == "error"
+    assert "blocked address" in result["error"]
+
+
+def test_fetch_web_metadata_blocks_non_http_and_private_hosts():
+    opener = Mock(return_value=FakeResponse())
+
+    private = fetch_web_metadata("http://localhost:8765", opener=opener)
+    non_http = fetch_web_metadata("file:///etc/passwd", opener=opener)
+
+    assert private["status"] == "blocked_unsafe_url"
+    assert non_http["status"] == "blocked_unsafe_url"
+    opener.assert_not_called()
 
 
 def test_search_web_brave_uses_api_key_and_normalizes_results():

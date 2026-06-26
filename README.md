@@ -7,6 +7,7 @@ This is intentionally **not** a fake verifier. It extracts clues from pasted out
 ## Run
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 -m app.server
 ```
 
@@ -15,6 +16,7 @@ Open: http://127.0.0.1:8765
 ## Test
 
 ```bash
+python3 -m pip install -r requirements-dev.txt
 python3 -m pytest -q
 ```
 
@@ -54,6 +56,8 @@ POST /api/full-check
 ```
 
 Current nodes are constrained tool-using agents. `original_jd_recon` runs first as a neutral lead generator: it reverse-searches title, salary, location, stack, phrasing, and assessment clues to find a likely original public JD. Only threshold-confident structured facts (`inferred_client_company`, `confidence_score >= 70`, `matched_original_jd_url`, `matched_fields`) are shared downstream. Other lanes do not see each other's verdicts/summaries; they independently verify the recon lead or original outreach facts. Tool outputs become the only new evidence.
+
+The committed `artifacts/graph_mermaid*.png` files are static architecture diagrams for README/demo use, not runtime outputs.
 
 - Original JD Recon: Search API + optional metadata fetch to infer likely end client from JD clues
 - Recruiter Identity: email-domain DNS/MX checks
@@ -104,6 +108,6 @@ URLSCAN_API_KEY=...
 VIRUSTOTAL_API_KEY=...
 ```
 
-Keep `EXPAND_URLS_LIVE=false` unless you want the app to make live GET requests to pasted links/shorteners. The tool is read-only, but it still touches the remote URL.
+Keep `EXPAND_URLS_LIVE=false` unless you want the app to make live GET requests to pasted links/shorteners. The tool is read-only, but it still touches the remote URL. Live URL fetches are guarded to allow only public `http/https` targets and block localhost, private IP ranges, link-local metadata services, non-HTTP schemes, embedded credentials, and unsafe redirects.
 
 Keep `SECURITY_SANDBOX_LIVE=false` by default. With it disabled, GitHub/code-assessment links produce a no-network Docker sandbox **plan** and a hard "do not run on host" warning. Set it to `true` only when you explicitly want the security lane to clone the repo and run static analysis inside Docker with `--network none`, read-only mounts, non-root user, CPU/memory/time limits, and no project install/test script execution.
