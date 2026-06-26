@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recruiter Risk Triage V1</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Recruiter safety check</p>
+        <h1>Should I reply?</h1>
+        <p class="lede">Paste a recruiter DM, JD, assessment link, repo/package request, or crypto/Web3 role. The system gives one answer, the safest reply, and the evidence.</p>
+      </div>
+      <div class="hero-badges" aria-label="System shape">
+        <span>JD recon lead</span>
+        <span>6 verifier lanes</span>
+        <span>tool evidence</span>
+        <span>LangSmith trace</span>
+      </div>
+    </header>
+
+    <section id="statusBar" class="status-bar idle" role="status">Ready. Paste a message or run the risky sample.</section>
+
+    <section class="layout">
+      <section class="panel input-panel">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">Input</p>
+            <h2>Recruiter message / JD</h2>
+          </div>
+          <button id="sampleBtn" type="button">Load risky sample</button>
+        </div>
+        <textarea id="message" spellcheck="true" placeholder="Paste recruiter email, LinkedIn DM, job description, links, repo/package requests..."></textarea>
+        <div class="actions">
+          <button id="fullCheckBtn" class="primary" type="button">Run full check</button>
+          <button id="copyReplyBtn" type="button">Copy safe reply</button>
+          <button id="copyBtn" type="button">Copy report</button>
+        </div>
+      </section>
+
+      <aside class="decision-stack">
+        <article id="decisionCard" class="panel decision-card empty">
+          <p class="card-label">Decision</p>
+          <strong id="finalActionLabel">Awaiting check</strong>
+          <div class="score-line"><span id="scoreValue">–/100</span><span id="scoreBand">not run</span></div>
+          <p id="finalActionReason">Run a check to get a decision.</p>
+        </article>
+
+        <article class="panel question-card">
+          <p class="card-label">Safe reply to send</p>
+          <blockquote id="safeQuestion">Run a check to generate a reply that does not run code, connect a wallet, or move off-platform prematurely.</blockquote>
+        </article>
+      </aside>
+    </section>
+
+    <section class="panel evidence-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Decision drivers</p>
+          <h2>Main reasons</h2>
+        </div>
+        <span id="summaryPill" class="pill">0 reasons</span>
+      </div>
+      <ul id="keyEvidence" class="driver-list"><li>Run a check.</li></ul>
+    </section>
+
+    <section class="panel opportunity-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Opportunity read</p>
+          <h2>Is it worth Dan's time?</h2>
+        </div>
+        <span id="opportunityPill" class="pill">not assessed</span>
+      </div>
+      <p id="opportunitySummary" class="opportunity-summary">Run a check to separate legitimacy, security risk, and opportunity fit.</p>
+      <div id="opportunityMetrics" class="opportunity-grid"></div>
+      <p id="salaryStance" class="salary-stance"></p>
+      <ul id="opportunityQuestions" class="question-list"></ul>
+    </section>
+
+    <section class="panel verification-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Verification digest</p>
+          <h2>Readable technical checks</h2>
+        </div>
+        <span id="digestPill" class="pill">0 checks</span>
+      </div>
+      <div id="verificationDigest" class="digest-grid">
+        <article class="digest-card empty">Run a check to see DNS, RDAP, Companies House, website and JD checks translated into plain English.</article>
+      </div>
+    </section>
+
+    <section class="panel recon-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Original JD recon</p>
+          <h2>Likely end-client lead</h2>
+        </div>
+        <span id="reconPill" class="pill">no confident lead yet</span>
+      </div>
+      <p id="reconSummary" class="recon-summary">The recon agent works backwards from title, salary, location, stack and phrasing before the other agents verify the lead.</p>
+      <div id="reconFacts" class="chips"><span class="empty-chip">Run a check.</span></div>
+    </section>
+
+    <section class="panel lanes-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Independent lanes</p>
+          <h2>What each agent concluded</h2>
+        </div>
+        <span class="pill">no lane-to-lane whispers</span>
+      </div>
+      <div id="laneCards" class="lane-grid">
+        <article class="lane-card empty">Run a check to see lane reports.</article>
+      </div>
+    </section>
+
+    <section class="panel security-panel">
+      <div class="panel-head">
+        <div>
+          <p class="section-kicker">Security escalation</p>
+          <h2>Sandbox policy</h2>
+        </div>
+      </div>
+      <ol id="securityLadder" class="ladder">
+        <li><span>1</span><div><strong>Behavioural scan</strong><p>Telegram moves, wallet requests, local code execution, urgency.</p></div></li>
+        <li><span>2</span><div><strong>Link analysis if URLs exist</strong><p>Expand, metadata, domain age, reputation lookups.</p></div></li>
+        <li><span>3</span><div><strong>Repo/package checks if artifacts exist</strong><p>GitHub metadata, package scripts, dependency risk.</p></div></li>
+        <li><span>4</span><div><strong>Sandbox only when needed</strong><p>No-network Docker, non-root, CPU/memory/time limits; never execute by default.</p></div></li>
+      </ol>
+    </section>
+
+    <details class="panel detail-panel">
+      <summary>Show raw details: gaps, evidence table, Markdown</summary>
+
+      <section class="detail-grid">
+        <article class="mini-card good"><h3>Verified</h3><ul id="verified"></ul></article>
+        <article class="mini-card neutral"><h3>Unverified / gaps</h3><ul id="unverified"></ul></article>
+        <article class="mini-card bad"><h3>Concerning</h3><ul id="concerning"></ul></article>
+        <article class="mini-card links"><h3>Lane report index</h3><ul id="laneReports"></ul></article>
+        <article class="mini-card links"><h3>Trace order</h3><ul id="traceOrder"></ul></article>
+      </section>
+
+      <section class="ledger-block">
+        <h3>Evidence ledger</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lane</th><th>Source</th><th>Finding</th><th>Quote</th><th>Confidence</th></tr></thead>
+            <tbody id="evidenceLedger"><tr><td colspan="5">Run full check.</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="markdown-panel">
+        <h3>Markdown report</h3>
+        <pre id="markdown">Run a check to generate copyable Markdown.</pre>
+      </section>
+    </details>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
